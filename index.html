@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda SOE</title>
+  <link rel="stylesheet" href="CSS/style.css">
+  <script src="JS/script.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <div>
+      <h1>Agenda SOE</h1>
+      <p>Agenda de atendimentos da Orientação Escolar</p>
+    </div>
+    <span class="legenda">● Disponível　 ● Agendado</span>
+  </header>
+
+  <main>
+  <!-- TELA DE LOGIN -->
+  <section id="telaLogin" class="painel-formulario">
+    <h2>Entrar na Agenda SOE</h2>
+    <p>Informe seus dados de acesso.</p>
+
+    <form id="formLogin">
+      <label for="usuario">Usuário</label>
+      <input
+        id="usuario"
+        type="text"
+        required
+        placeholder="Seu usuário"
+      >
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        required
+        placeholder="Sua senha"
+      >
+
+      <button type="submit">Entrar</button>
+      <p id="mensagemLogin" role="status"></p>
+    </form>
+  </section>
+
+  <!-- ÁREA DO PROFESSOR -->
+  <section id="telaProfessor" hidden>
+    <header class="navegacao">
+      <h2>Agenda do SOE</h2>
+      <button id="btnAcessoOrientador" type="button">
+        Acesso do orientador
+      </button>
+</header>
+    <section class="navegacao">
+      <div>
+        <button id="semanaAnterior" type="button">← Anterior</button>
+        <button id="irHoje" type="button">Hoje</button>
+        <button id="proximaSemana" type="button">Próxima →</button>
+      </div>
+      <h2 id="tituloSemana"></h2>
+    </section>
+
+    <section class="layout">
+      <div class="painel-agenda">
+        <div class="rolagem">
+          <div id="calendario" class="calendario"></div>
+        </div>
+        <p class="dica">
+          Selecione um horário disponível para solicitar
+          um atendimento. Os pedidos aguardam confirmação.
+        </p>
+      </div>
+
+      <aside class="painel-formulario">
+        <h2>Novo atendimento</h2>
+
+        <div class="horario-selecionado">
+          <small>Horário selecionado</small>
+          <strong id="horarioSelecionado">
+            Nenhum horário selecionado
+          </strong>
+        </div>
+
+        <form id="formAgendamento">
+          <label for="nomeEstudante">Nome do estudante</label>
+          <input
+            id="nomeEstudante"
+            type="text"
+            maxlength="100"
+            required
+            placeholder="Nome completo"
+          >
+
+          <label for="turma">Turma</label>
+          <input
+            id="turma"
+            type="text"
+            maxlength="30"
+            required
+            placeholder="Ex.: 7º A"
+          >
+
+          <label for="motivo">Motivo do atendimento</label>
+          <textarea
+            id="motivo"
+            rows="4"
+            maxlength="1000"
+            required
+            placeholder="Descreva o motivo..."
+          ></textarea>
+
+          <button id="btnAgendar" type="submit" disabled>
+            Solicitar atendimento
+          </button>
+
+          <p id="mensagem" role="status"></p>
+        </form>
+      </aside>
+    </section>
+  </section>
+
+  <!-- ÁREA DO ORIENTADOR -->
+  <section id="telaOrientador" hidden>
+    <header class="navegacao">
+      <div>
+        <h2>Agenda do Orientador</h2>
+        <p>Gerencie e confirme os atendimentos.</p>
+      </div>
+      <button class="btnSair" type="button">Sair</button>
+    </header>
+
+    <section class="navegacao">
+      <div>
+        <button id="semanaAnteriorOrientador" type="button">
+          ← Anterior
+        </button>
+        <button id="hojeOrientador" type="button">Hoje</button>
+        <button id="proximaSemanaOrientador" type="button">
+          Próxima →
+        </button>
+      </div>
+      <h2 id="tituloSemanaOrientador"></h2>
+    </section>
+
+    <div class="rolagem">
+      <div id="calendarioOrientador" class="calendario"></div>
+    </div>
+    <aside class="painel-formulario">
+    <h2>Novo atendimento direto</h2>
+
+    <div class="horario-selecionado">
+      <small>Horário selecionado</small>
+      <strong id="horarioSelecionadoOrientador">
+        Nenhum horário selecionado
+      </strong>
+    </div>
+
+    <form id="formAgendamentoOrientador">
+    <label for="nomeEstudanteOrientador">
+      Nome do estudante
+    </label>
+    <input
+      id="nomeEstudanteOrientador"
+      type="text"
+      maxlength="100"
+      required
+      placeholder="Nome completo"
+    >
+
+    <label for="turmaOrientador">Turma</label>
+    <input
+      id="turmaOrientador"
+      type="text"
+      maxlength="30"
+      required
+      placeholder="Ex.: 7º A"
+    >
+
+    <label for="motivoOrientador">
+      Motivo do atendimento
+    </label>
+    <textarea
+      id="motivoOrientador"
+      rows="4"
+      maxlength="1000"
+      required
+      placeholder="Descreva o motivo..."
+    ></textarea>
+
+    <button
+      id="btnAgendarOrientador"
+      type="submit"
+      disabled
+    >
+      Agendar e confirmar
+    </button>
+
+    <p id="mensagemOrientador" role="status"></p>
+  </form>
+</aside>
+  </section>
+</main>
+
+  <script>
+    // Não precisamos de JavaScript aqui:
+    // o arquivo JS/script.js já está conectado no cabeçalho.
+  </script>
+</body>
+</html>
