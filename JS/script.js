@@ -54,6 +54,8 @@ const tituloSemanaOrientador =
 
 const btnAcessoOrientador =
   document.querySelector("#btnAcessoOrientador");
+const btnVoltarAgendaPublica =
+  document.querySelector("#btnVoltarAgendaPublica");
 
 document.querySelector("#semanaAnteriorOrientador")
   .addEventListener("click", () => {
@@ -155,6 +157,11 @@ function abrirAgendaPublica() {
   mostrarTela(telaProfessor);
   renderizarCalendario();
 }
+
+btnVoltarAgendaPublica.addEventListener("click", () => {
+  perfilAtual = null;
+  abrirAgendaPublica();
+});
 
 botoesSair.forEach(botao => {
   botao.addEventListener("click", () => {
