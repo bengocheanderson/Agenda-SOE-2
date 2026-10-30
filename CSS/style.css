@@ -14,6 +14,8 @@
 
 body {
   margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
   background: var(--fundo);
   color: var(--texto);
   font-family: Arial, sans-serif;
@@ -27,6 +29,7 @@ textarea {
 
 .topo {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
@@ -47,12 +50,16 @@ textarea {
 }
 
 .legenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 12px;
   font-size: 13px;
 }
 
 .legenda-item {
-  margin-left: 10px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .legenda-disponivel {
@@ -72,13 +79,15 @@ textarea {
 }
 
 main {
+  width: 100%;
   max-width: 1600px;
   margin: auto;
-  padding: 28px 3%;
+  padding: 28px clamp(16px, 3%, 48px);
 }
 
 .navegacao {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
@@ -109,7 +118,7 @@ button:disabled {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
   gap: 20px;
   align-items: start;
 }
@@ -125,12 +134,16 @@ button:disabled {
 }
 
 .rolagem {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .calendario {
   display: grid;
   grid-template-columns: 65px repeat(5, minmax(120px, 1fr));
+  width: 100%;
   min-width: 700px;
 }
 
@@ -289,6 +302,7 @@ button:disabled {
 }
 
 .painel-formulario {
+  width: 100%;
   padding: 22px;
 }
 
@@ -382,13 +396,35 @@ textarea {
   .layout {
     grid-template-columns: 1fr;
   }
+
+  .calendario {
+    grid-template-columns: 56px repeat(5, minmax(116px, 1fr));
+    min-width: 636px;
+  }
 }
 
 @media (max-width: 600px) {
+  main {
+    padding: 18px 12px;
+  }
+
   .topo,
   .navegacao {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .topo {
+    gap: 14px;
+    padding: 18px 16px;
+  }
+
+  .topo h1 {
+    font-size: 23px;
+  }
+
+  .legenda {
+    justify-content: flex-start;
   }
 
   .navegacao h2 {
@@ -398,6 +434,43 @@ textarea {
 
   .painel-formulario {
     padding: 17px;
+  }
+
+  .navegacao > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .navegacao > button {
+    width: 100%;
+  }
+
+  .navegacao > div > button {
+    flex: 1 1 120px;
+  }
+
+  .calendario {
+    grid-template-columns: 52px repeat(5, minmax(112px, 1fr));
+    min-width: 612px;
+  }
+
+  button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .cabecalho-dia {
+    padding: 12px 4px;
+  }
+
+  .celula {
+    min-height: 62px;
+  }
+
+  .indicador-status {
+    font-size: 10px;
   }
 }
 
