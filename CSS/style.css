@@ -47,8 +47,28 @@ textarea {
 }
 
 .legenda {
-  color: var(--verde);
   font-size: 13px;
+}
+
+.legenda-item {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.legenda-disponivel {
+  color: #24804e;
+}
+
+.legenda-pendente {
+  color: #9a6b00;
+}
+
+.legenda-confirmado {
+  color: #b42318;
+}
+
+.legenda-indisponivel {
+  color: #657180;
 }
 
 main {
@@ -160,30 +180,54 @@ button:disabled {
 }
 
 .celula-disponivel {
+  background: #e6f4ea;
   cursor: pointer;
 }
 
 .celula-disponivel:hover {
-  background: #f0faf5;
+  background: #d7eddd;
 }
 
 .celula.selecionada {
-  background: #dff4ed;
+  background: #c8e8d0;
   box-shadow: inset 0 0 0 2px var(--principal);
 }
 
-.disponivel {
-  color: var(--verde);
+.indicador-status {
+  width: 100%;
+  color: #176b37;
   font-size: 11px;
+  font-weight: bold;
+  text-align: center;
 }
 
-.disponivel::before {
+.indicador-status::before {
   content: "● ";
 }
 
-.celula-agendada {
-  background: #e5f3f3;
-  cursor: pointer;
+.celula-pendente {
+  background: #fff0c2;
+}
+
+.celula-pendente .indicador-status {
+  color: #805900;
+}
+
+.celula-confirmado {
+  background: #ffe0e0;
+}
+
+.celula-confirmado .indicador-status {
+  color: #a32626;
+}
+
+.celula-indisponivel {
+  background: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.celula-indisponivel .indicador-status {
+  color: #657180;
 }
 
 .agendamento {
@@ -232,6 +276,11 @@ button:disabled {
   margin-top: 0;
 }
 
+.formulario-oculto,
+.botao-oculto {
+  display: none;
+}
+
 .horario-selecionado {
   display: flex;
   flex-direction: column;
@@ -277,13 +326,19 @@ textarea {
   resize: vertical;
 }
 
-#btnAgendar {
+#btnAgendar,
+#btnEnviarSolicitacao {
   width: 100%;
   margin-top: 18px;
   border: 0;
   background: var(--principal);
   color: white;
   font-weight: bold;
+}
+
+#btnCancelarAgendamento {
+  width: 100%;
+  margin-top: 10px;
 }
 
 #mensagem {

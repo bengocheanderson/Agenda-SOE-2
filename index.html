@@ -13,7 +13,12 @@
       <h1>Agenda SOE</h1>
       <p>Agenda de atendimentos da Orientação Escolar</p>
     </div>
-    <span class="legenda">● Disponível　 ● Agendado</span>
+    <span class="legenda">
+      <span class="legenda-item legenda-disponivel">● Disponível</span>
+      <span class="legenda-item legenda-pendente">● Pendente</span>
+      <span class="legenda-item legenda-confirmado">● Confirmado</span>
+      <span class="legenda-item legenda-indisponivel">● Indisponível</span>
+    </span>
   </header>
 
   <main>
@@ -82,7 +87,11 @@
           </strong>
         </div>
 
-        <form id="formAgendamento">
+        <button id="btnAgendar" type="button" disabled>
+          Agendar atendimento
+        </button>
+
+        <form id="formAgendamento" class="formulario-oculto">
           <label for="nomeEstudante">Nome do estudante</label>
           <input
             id="nomeEstudante"
@@ -110,8 +119,11 @@
             placeholder="Descreva o motivo..."
           ></textarea>
 
-          <button id="btnAgendar" type="submit" disabled>
-            Solicitar atendimento
+          <button id="btnEnviarSolicitacao" type="submit">
+            Enviar solicitação
+          </button>
+          <button id="btnCancelarAgendamento" type="button">
+            Cancelar
           </button>
 
           <p id="mensagem" role="status"></p>

@@ -12,6 +12,10 @@ const motivoInput = document.querySelector("#motivo");
 
 const horarioSelecionado = document.querySelector("#horarioSelecionado");
 const btnAgendar = document.querySelector("#btnAgendar");
+const btnEnviarSolicitacao =
+  document.querySelector("#btnEnviarSolicitacao");
+const btnCancelarAgendamento =
+  document.querySelector("#btnCancelarAgendamento");
 const mensagem = document.querySelector("#mensagem");
 
 const formularioOrientador =
@@ -80,6 +84,34 @@ function limparSelecaoOrientador() {
     "Nenhum horário selecionado";
   btnAgendarOrientador.disabled = true;
   mensagemOrientador.textContent = "";
+}
+
+function limparSelecaoProfessor() {
+  formulario.reset();
+  formulario.classList.add("formulario-oculto");
+  btnAgendar.classList.remove("botao-oculto");
+  btnAgendar.disabled = true;
+  horarioEscolhido = null;
+  horarioSelecionado.textContent = "Nenhum horário selecionado";
+  mensagem.textContent = "";
+}
+
+function abrirFormularioProfessor() {
+  if (!horarioEscolhido) return;
+
+  const ocupado = agendamentos.some(
+    item => item.chave === horarioEscolhido
+  );
+
+  if (ocupado) {
+    limparSelecaoProfessor();
+    renderizarCalendario();
+    return;
+  }
+
+  formulario.classList.remove("formulario-oculto");
+  btnAgendar.classList.add("botao-oculto");
+  btnEnviarSolicitacao.focus();
 }
 
 function mostrarTela(tela) {
@@ -238,6 +270,34 @@ function mostrarMensagem(texto, tipo = "") {
   mensagem.style.color = tipo === "erro" ? "#b42318" : "#24804e";
 }
 
+function normalizarStatus(agendamento) {
+  if (!agendamento.status) {
+    agendamento.status = "pendente";
+  }
+
+  if (
+    agendamento.status === "bloqueado" ||
+    agendamento.status === "indisponivel"
+  ) {
+    return "indisponivel";
+  }
+
+  return ["pendente", "confirmado"].includes(agendamento.status)
+    ? agendamento.status
+    : "pendente";
+}
+
+function textoStatus(status) {
+  const textos = {
+    disponivel: "Disponível",
+    pendente: "Pendente",
+    confirmado: "Confirmado",
+    indisponivel: "Indisponível"
+  };
+
+  return textos[status] || "Indisponível";
+}
+
 // Desenha novamente o calendário.
 function renderizarCalendario() {
   desenharCalendario(calendario, tituloSemana, "professor");
@@ -316,7 +376,17 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
       celula.className = "celula";
 
       if (agendamento) {
-        celula.classList.add("celula-agendada");
+        const statusAtual = normalizarStatus(agendamento);
+        celula.classList.add(`celula-${statusAtual}`);
+
+        if (perfil === "professor") {
+          const indicador = document.createElement("span");
+          indicador.className = "indicador-status";
+          indicador.textContent = textoStatus(statusAtual);
+          celula.appendChild(indicador);
+          elementoCalendario.appendChild(celula);
+          return;
+        }
 
         const cartao = document.createElement("div");
         cartao.className = "agendamento";
@@ -327,18 +397,12 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
         const turma = document.createElement("span");
         turma.textContent = agendamento.turma;
 
-        if (!agendamento.status) {
-          agendamento.status = "pendente";
-        }
-
         const status = document.createElement("span");
         status.className = "status-agendamento";
-        status.classList.add(`status-${agendamento.status}`);
+        status.classList.add(`status-${statusAtual}`);
 
         status.textContent =
-          agendamento.status === "confirmado"
-            ? "Confirmado"
-            : "Pendente";
+          textoStatus(statusAtual);
 
         cartao.append(nome, turma, status);
 
@@ -379,7 +443,7 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
           cartao.append(resumo, motivoCompleto, botaoExpandir);
 
           // Ações administrativas exclusivas do orientador.
-          if (agendamento.status === "pendente") {
+          if (statusAtual === "pendente") {
             const botaoConfirmar = document.createElement("button");
             botaoConfirmar.type = "button";
             botaoConfirmar.textContent = "Confirmar";
@@ -427,7 +491,7 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
             });
 
             cartao.append(botaoConfirmar, botaoRecusar);
-          } else {
+          } else if (statusAtual === "confirmado") {
             const botaoCancelar = document.createElement("button");
             botaoCancelar.type = "button";
             botaoCancelar.textContent = "Cancelar atendimento";
@@ -464,8 +528,8 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
         celula.classList.add("celula-disponivel");
 
         const disponivel = document.createElement("span");
-        disponivel.className = "disponivel";
-        disponivel.textContent = "Disponível";
+        disponivel.className = "indicador-status";
+        disponivel.textContent = textoStatus("disponivel");
         celula.appendChild(disponivel);
 
         if (
@@ -507,6 +571,14 @@ function selecionarHorario(chave, data, minutos) {
 
   renderizarCalendario();
 }
+
+btnAgendar.addEventListener("click", abrirFormularioProfessor);
+
+btnCancelarAgendamento.addEventListener("click", () => {
+  limparSelecaoProfessor();
+  renderizarCalendario();
+});
+
 // Captura os campos quando o formulário é enviado.
 formulario.addEventListener("submit", evento => {
   evento.preventDefault();
@@ -553,11 +625,7 @@ formulario.addEventListener("submit", evento => {
     return;
   }
 
-  formulario.reset();
-
-  horarioEscolhido = null;
-  horarioSelecionado.textContent = "Nenhum horário selecionado";
-  btnAgendar.disabled = true;
+  limparSelecaoProfessor();
 
   mostrarMensagem("Atendimento agendado com sucesso!");
   renderizarCalendario();
@@ -623,9 +691,7 @@ formularioOrientador.addEventListener("submit", evento => {
 function mudarSemana(quantidade) {
   dataReferencia = somarDias(dataReferencia, quantidade * 7);
 
-  horarioEscolhido = null;
-  horarioSelecionado.textContent = "Nenhum horário selecionado";
-  btnAgendar.disabled = true;
+  limparSelecaoProfessor();
 
   mostrarMensagem("");
   renderizarCalendario();
@@ -637,9 +703,7 @@ btnProxima.addEventListener("click", () => mudarSemana(1));
 btnHoje.addEventListener("click", () => {
   dataReferencia = new Date();
 
-  horarioEscolhido = null;
-  horarioSelecionado.textContent = "Nenhum horário selecionado";
-  btnAgendar.disabled = true;
+  limparSelecaoProfessor();
 
   mostrarMensagem("");
   renderizarCalendario();
