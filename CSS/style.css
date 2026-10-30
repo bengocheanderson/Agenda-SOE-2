@@ -64,7 +64,7 @@ textarea {
 }
 
 .legenda-confirmado {
-  color: #b42318;
+  color: #1d4ed8;
 }
 
 .legenda-indisponivel {
@@ -214,11 +214,11 @@ button:disabled {
 }
 
 .celula-confirmado {
-  background: #ffe0e0;
+  background: #dbeafe;
 }
 
 .celula-confirmado .indicador-status {
-  color: #a32626;
+  color: #1e3a8a;
 }
 
 .celula-indisponivel {
@@ -249,6 +249,26 @@ button:disabled {
 .agendamento span {
   margin-top: 3px;
   color: #4c6968;
+}
+
+.celula-pendente .agendamento {
+  border-left-color: #d39b00;
+  background: #fff0c2;
+}
+
+.celula-pendente .agendamento strong,
+.celula-pendente .agendamento span {
+  color: #5f4300;
+}
+
+.celula-confirmado .agendamento {
+  border-left-color: #2563eb;
+  background: #dbeafe;
+}
+
+.celula-confirmado .agendamento strong,
+.celula-confirmado .agendamento span {
+  color: #1e3a8a;
 }
 
 .almoco {
@@ -339,6 +359,11 @@ textarea {
 #btnCancelarAgendamento {
   width: 100%;
   margin-top: 10px;
+}
+
+#btnAlternarBloqueio {
+  width: 100%;
+  margin-bottom: 18px;
 }
 
 #mensagem {
@@ -455,8 +480,8 @@ textarea {
 }
 
 .status-confirmado {
-  background: #d5f3df;
-  color: #176b37;
+  background: #bfdbfe;
+  color: #1e3a8a;
 }
 
 .status-cancelado {

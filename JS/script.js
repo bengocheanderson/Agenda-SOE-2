@@ -30,6 +30,8 @@ const horarioSelecionadoOrientador =
   document.querySelector("#horarioSelecionadoOrientador");
 const btnAgendarOrientador =
   document.querySelector("#btnAgendarOrientador");
+const btnAlternarBloqueio =
+  document.querySelector("#btnAlternarBloqueio");
 const mensagemOrientador =
   document.querySelector("#mensagemOrientador");
 
@@ -85,6 +87,8 @@ function limparSelecaoOrientador() {
   horarioSelecionadoOrientador.textContent =
     "Nenhum horário selecionado";
   btnAgendarOrientador.disabled = true;
+  btnAlternarBloqueio.disabled = true;
+  btnAlternarBloqueio.textContent = "Marcar como indisponível";
   mensagemOrientador.textContent = "";
 }
 
@@ -305,6 +309,36 @@ function textoStatus(status) {
   return textos[status] || "Indisponível";
 }
 
+function encontrarAgendamento(chave) {
+  return agendamentos.find(item => item.chave === chave);
+}
+
+function atualizarControleBloqueio() {
+  const agendamento = encontrarAgendamento(horarioEscolhido);
+  const status = agendamento
+    ? normalizarStatus(agendamento)
+    : "disponivel";
+
+  if (perfilAtual !== "orientador" || !horarioEscolhido) {
+    btnAlternarBloqueio.disabled = true;
+    btnAlternarBloqueio.textContent = "Marcar como indisponível";
+    return;
+  }
+
+  btnAlternarBloqueio.disabled =
+    status !== "disponivel" && status !== "indisponivel";
+  btnAlternarBloqueio.textContent =
+    status === "indisponivel"
+      ? "Liberar horário"
+      : "Marcar como indisponível";
+}
+
+function mostrarMensagemOrientador(texto, tipo = "") {
+  mensagemOrientador.textContent = texto;
+  mensagemOrientador.style.color =
+    tipo === "erro" ? "#b42318" : "#24804e";
+}
+
 // Desenha novamente o calendário.
 function renderizarCalendario() {
   desenharCalendario(calendario, tituloSemana, "professor");
@@ -386,11 +420,21 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
         const statusAtual = normalizarStatus(agendamento);
         celula.classList.add(`celula-${statusAtual}`);
 
-        if (perfil === "professor") {
+        if (
+          perfil === "professor" ||
+          statusAtual === "indisponivel"
+        ) {
           const indicador = document.createElement("span");
           indicador.className = "indicador-status";
           indicador.textContent = textoStatus(statusAtual);
           celula.appendChild(indicador);
+
+          if (perfil === "orientador") {
+            celula.addEventListener("click", () => {
+              selecionarHorario(chave, data, minutos);
+            });
+          }
+
           elementoCalendario.appendChild(celula);
           return;
         }
@@ -566,10 +610,15 @@ function selecionarHorario(chave, data, minutos) {
     `${nomeDia(data)}, ${formatarData(data)} às ${formatarHora(minutos)}`;
 
   if (perfilAtual === "orientador") {
-    document.querySelector("#horarioSelecionadoOrientador").textContent =
-      textoHorario;
+    const agendamento = encontrarAgendamento(chave);
+    const status = agendamento
+      ? normalizarStatus(agendamento)
+      : "disponivel";
 
-    document.querySelector("#btnAgendarOrientador").disabled = false;
+    horarioSelecionadoOrientador.textContent = textoHorario;
+    btnAgendarOrientador.disabled = status !== "disponivel";
+    atualizarControleBloqueio();
+    mostrarMensagemOrientador("");
   } else {
     horarioSelecionado.textContent = textoHorario;
     btnAgendar.disabled = false;
@@ -584,6 +633,59 @@ btnAgendar.addEventListener("click", abrirFormularioProfessor);
 btnCancelarAgendamento.addEventListener("click", () => {
   limparSelecaoProfessor();
   renderizarCalendario();
+});
+
+btnAlternarBloqueio.addEventListener("click", () => {
+  if (perfilAtual !== "orientador" || !horarioEscolhido) return;
+
+  const agendamento = encontrarAgendamento(horarioEscolhido);
+  const status = agendamento
+    ? normalizarStatus(agendamento)
+    : "disponivel";
+
+  if (status === "disponivel") {
+    const bloqueio = {
+      id: Date.now().toString() + Math.random().toString(16).slice(2),
+      chave: horarioEscolhido,
+      status: "bloqueado"
+    };
+
+    agendamentos.push(bloqueio);
+
+    if (!salvarAgendamentos()) {
+      agendamentos.pop();
+      mostrarMensagemOrientador(
+        "Não foi possível bloquear o horário.",
+        "erro"
+      );
+      return;
+    }
+
+    limparSelecaoOrientador();
+    mostrarMensagemOrientador("Horário marcado como indisponível.");
+    renderizarCalendario();
+    return;
+  }
+
+  if (status === "indisponivel") {
+    const anteriores = agendamentos;
+    agendamentos = agendamentos.filter(
+      item => item.chave !== horarioEscolhido
+    );
+
+    if (!salvarAgendamentos()) {
+      agendamentos = anteriores;
+      mostrarMensagemOrientador(
+        "Não foi possível liberar o horário.",
+        "erro"
+      );
+      return;
+    }
+
+    limparSelecaoOrientador();
+    mostrarMensagemOrientador("Horário liberado.");
+    renderizarCalendario();
+  }
 });
 
 // Captura os campos quando o formulário é enviado.
