@@ -14,6 +14,21 @@ const horarioSelecionado = document.querySelector("#horarioSelecionado");
 const btnAgendar = document.querySelector("#btnAgendar");
 const mensagem = document.querySelector("#mensagem");
 
+const formularioOrientador =
+  document.querySelector("#formAgendamentoOrientador");
+const nomeInputOrientador =
+  document.querySelector("#nomeEstudanteOrientador");
+const turmaInputOrientador =
+  document.querySelector("#turmaOrientador");
+const motivoInputOrientador =
+  document.querySelector("#motivoOrientador");
+const horarioSelecionadoOrientador =
+  document.querySelector("#horarioSelecionadoOrientador");
+const btnAgendarOrientador =
+  document.querySelector("#btnAgendarOrientador");
+const mensagemOrientador =
+  document.querySelector("#mensagemOrientador");
+
 const CHAVE = "agendaSOE_agendamentos";
 
 const telaLogin = document.querySelector("#telaLogin");
@@ -39,22 +54,33 @@ const btnAcessoOrientador =
 document.querySelector("#semanaAnteriorOrientador")
   .addEventListener("click", () => {
     dataReferencia = somarDias(dataReferencia, -7);
+    limparSelecaoOrientador();
     renderizarCalendario();
   });
 
 document.querySelector("#proximaSemanaOrientador")
   .addEventListener("click", () => {
     dataReferencia = somarDias(dataReferencia, 7);
+    limparSelecaoOrientador();
     renderizarCalendario();
   });
 
 document.querySelector("#hojeOrientador")
   .addEventListener("click", () => {
     dataReferencia = new Date();
+    limparSelecaoOrientador();
     renderizarCalendario();
   });
 
 let perfilAtual = null;
+
+function limparSelecaoOrientador() {
+  horarioEscolhido = null;
+  horarioSelecionadoOrientador.textContent =
+    "Nenhum horário selecionado";
+  btnAgendarOrientador.disabled = true;
+  mensagemOrientador.textContent = "";
+}
 
 function mostrarTela(tela) {
   telaLogin.hidden = true;
@@ -443,13 +469,13 @@ function desenharCalendario(elementoCalendario, elementoTitulo, perfil) {
         celula.appendChild(disponivel);
 
         if (
-          perfil === "professor" &&
+          (perfil === "professor" || perfil === "orientador") &&
           horarioEscolhido === chave
         ) {
           celula.classList.add("selecionada");
         }
 
-        if (perfil === "professor") {
+        if (perfil === "professor" || perfil === "orientador") {
           celula.addEventListener("click", () => {
             selecionarHorario(chave, data, minutos);
           });
@@ -534,6 +560,62 @@ formulario.addEventListener("submit", evento => {
   btnAgendar.disabled = true;
 
   mostrarMensagem("Atendimento agendado com sucesso!");
+  renderizarCalendario();
+});
+
+formularioOrientador.addEventListener("submit", evento => {
+  evento.preventDefault();
+
+  if (!horarioEscolhido) {
+    mensagemOrientador.textContent = "Selecione um horário na agenda.";
+    mensagemOrientador.style.color = "#b42318";
+    return;
+  }
+
+  const ocupado = agendamentos.some(
+    item => item.chave === horarioEscolhido
+  );
+
+  if (ocupado) {
+    mensagemOrientador.textContent = "Esse horário já está ocupado.";
+    mensagemOrientador.style.color = "#b42318";
+    return;
+  }
+
+  const nome = nomeInputOrientador.value.trim();
+  const turma = turmaInputOrientador.value.trim();
+  const motivo = motivoInputOrientador.value.trim();
+
+  if (!nome || !turma || !motivo) {
+    mensagemOrientador.textContent = "Preencha todos os campos.";
+    mensagemOrientador.style.color = "#b42318";
+    return;
+  }
+
+  const novoAgendamento = {
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    chave: horarioEscolhido,
+    nome: nome,
+    turma: turma,
+    motivo: motivo,
+    status: "confirmado"
+  };
+
+  agendamentos.push(novoAgendamento);
+
+  if (!salvarAgendamentos()) {
+    agendamentos.pop();
+    return;
+  }
+
+  formularioOrientador.reset();
+  horarioEscolhido = null;
+  horarioSelecionadoOrientador.textContent =
+    "Nenhum horário selecionado";
+  btnAgendarOrientador.disabled = true;
+  mensagemOrientador.textContent =
+    "Atendimento agendado com sucesso!";
+  mensagemOrientador.style.color = "#24804e";
   renderizarCalendario();
 });
 
